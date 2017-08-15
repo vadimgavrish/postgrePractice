@@ -15,13 +15,19 @@ client.connect((err) => {
         return console.error('Connection Error', err);
     }
     client.query('SELECT * FROM famous_people WHERE first_name LIKE $1 OR last_name LIKE $1', [process.argv[2]], (err, result) => {        
-        console.log('Searching ...')
+        console.log('Searching ...');
+        if (result.rows.length === 0) {
+            console.log('Query not found!');
+            return client.end();
+        }
         if (err) {
             return console.error('error running query', err);
         }
         let input = process.argv[2];
         console.log("Found " + result.rows.length + " person(s) by the name '" + input + "':");
-        
+
+        console.log(result.rows.length);
+
         let year = result.rows[0].birthdate.getFullYear();
         let month = ("0" + (result.rows[0].birthdate.getMonth()+1)).slice(-2);
         let day = result.rows[0].birthdate.getDate();
